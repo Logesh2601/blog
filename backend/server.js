@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 
 const authRoutes = require('./routes/auth');
 const postsRoutes = require('./routes/posts');
@@ -14,9 +15,13 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Resolve frontend path — works from repo root or /backend
+const frontendPath = path.resolve(__dirname, '..', 'frontend');
+console.log('Frontend path:', frontendPath);
+console.log('Frontend exists:', fs.existsSync(frontendPath));
+console.log('index.html exists:', fs.existsSync(path.join(frontendPath, 'index.html')));
+
 // Serve frontend static files
-// Works whether node is run from /backend or from the repo root
-const frontendPath = path.join(__dirname, '..', 'frontend');
 app.use(express.static(frontendPath));
 
 // API Routes
@@ -24,13 +29,14 @@ app.use('/api/auth', authRoutes);
 app.use('/api/posts', postsRoutes);
 app.use('/api/comments', commentsRoutes);
 
-// Catch-all: serve index.html for any non-API route
+// API 404
+app.use('/api', (req, res) => {
+  res.status(404).json({ message: 'API endpoint not found' });
+});
+
+// Catch-all: serve index.html for all non-API routes (SPA fallback)
 app.get('*', (req, res) => {
-  if (!req.path.startsWith('/api')) {
-    res.sendFile(path.join(frontendPath, 'index.html'));
-  } else {
-    res.status(404).json({ message: 'API endpoint not found' });
-  }
+  res.sendFile(path.join(frontendPath, 'index.html'));
 });
 
 // Start server
