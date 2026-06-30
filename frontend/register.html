@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register — Blog Platform</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav>
+    <div class="nav-inner">
+      <a href="/index.html" class="nav-brand">📖 BlogSpace</a>
+      <div class="nav-links" id="nav-auth">
+        <!-- Rendered by auth.js -->
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="container-narrow">
+    <div class="auth-card">
+      <div class="auth-card-header">
+        <h1>Create an Account</h1>
+        <p>Join BlogSpace and start sharing your stories.</p>
+      </div>
+
+      <div id="register-alert"></div>
+
+      <form id="register-form" novalidate>
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input
+            type="text"
+            id="username"
+            class="form-control"
+            placeholder="Choose a username"
+            autocomplete="username"
+            required
+            minlength="3"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input
+            type="email"
+            id="email"
+            class="form-control"
+            placeholder="you@example.com"
+            autocomplete="email"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input
+            type="password"
+            id="password"
+            class="form-control"
+            placeholder="At least 6 characters"
+            autocomplete="new-password"
+            required
+            minlength="6"
+          />
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full" id="submit-btn">
+          Create Account
+        </button>
+      </form>
+
+      <p class="auth-footer">
+        Already have an account? <a href="/login.html">Login here</a>
+      </p>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2024 BlogSpace. Built with ❤️</p>
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Redirect if already logged in
+      if (auth.isLoggedIn()) {
+        window.location.href = '/index.html';
+        return;
+      }
+      auth.renderNav();
+      setupRegisterForm();
+    });
+
+    function setupRegisterForm() {
+      const form = document.getElementById('register-form');
+      const submitBtn = document.getElementById('submit-btn');
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        clearAlert('register-alert');
+
+        const username = document.getElementById('username').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+
+        if (!username || username.length < 3) {
+          showAlert('register-alert', 'Username must be at least 3 characters.');
+          return;
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!email || !emailRegex.test(email)) {
+          showAlert('register-alert', 'Please enter a valid email address.');
+          return;
+        }
+
+        if (!password || password.length < 6) {
+          showAlert('register-alert', 'Password must be at least 6 characters.');
+          return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner spinner-sm"></span> Creating Account...';
+
+        try {
+          const data = await api.register(username, email, password);
+          auth.setAuth(data.token, data.user);
+
+          // Redirect to intended page or home
+          const redirect = getQueryParam('redirect');
+          window.location.href = redirect || '/index.html';
+        } catch (err) {
+          showAlert('register-alert', err.message || 'Registration failed. Please try again.');
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = 'Create Account';
+        }
+      });
+    }
+  </script>
+</body>
+</html>

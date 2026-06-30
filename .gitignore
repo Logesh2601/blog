@@ -1,0 +1,10 @@
+node_modules/
+backend/node_modules/
+backend/db/blog.db
+backend/db/blog.db-shm
+backend/db/blog.db-wal
+*.db
+*.db-shm
+*.db-wal
+.env
+.DS_Store

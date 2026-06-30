@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Edit Post — Blog Platform</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav>
+    <div class="nav-inner">
+      <a href="/index.html" class="nav-brand">📖 BlogSpace</a>
+      <div class="nav-links" id="nav-auth">
+        <!-- Rendered by auth.js -->
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="container">
+    <a class="back-link" id="back-link" href="/index.html">← Back to post</a>
+
+    <div class="page-header">
+      <div>
+        <h1>Edit Post</h1>
+        <p class="page-subtitle">Update your post content.</p>
+      </div>
+    </div>
+
+    <div class="post-form-card" id="post-form-card">
+      <div id="form-alert"></div>
+
+      <form id="post-form" novalidate>
+        <div class="form-group">
+          <label for="post-title">Title</label>
+          <input
+            type="text"
+            id="post-title"
+            class="form-control"
+            placeholder="Post title..."
+            required
+            minlength="3"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="post-content">Content</label>
+          <textarea
+            id="post-content"
+            class="form-control tall"
+            placeholder="Post content..."
+            required
+            minlength="10"
+          ></textarea>
+        </div>
+
+        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+          <button type="submit" class="btn btn-primary" id="submit-btn">
+            Save Changes
+          </button>
+          <a href="/index.html" id="cancel-link" class="btn btn-secondary">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2024 BlogSpace. Built with ❤️</p>
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/create-post.js"></script>
+  <script>
+    // Update back/cancel links to point to the post
+    document.addEventListener('DOMContentLoaded', () => {
+      const postId = getQueryParam('id');
+      if (postId) {
+        const backLink = document.getElementById('back-link');
+        const cancelLink = document.getElementById('cancel-link');
+        if (backLink) backLink.href = `/post.html?id=${postId}`;
+        if (cancelLink) cancelLink.href = `/post.html?id=${postId}`;
+      }
+    });
+  </script>
+</body>
+</html>
