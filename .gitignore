@@ -3,6 +3,7 @@ backend/node_modules/
 backend/db/blog.db
 backend/db/blog.db-shm
 backend/db/blog.db-wal
+backend/package-lock.json
 *.db
 *.db-shm
 *.db-wal
